@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="../static/styles/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="landing">
+        <header>
+            <section class="logo_and_name">
+                <p>Attendance System</p>
+            </section>
+            <nav>
+                <ul class="header_nav">
+                    <li class="current-page">Home</li>
+                    <li><a href="#about">About</a></li>
+                    <li><a onclick="window.location.href='{{ url_for('admin') }}'">Admin</a></li>
+                    <li><a onclick="window.location.href='{{ url_for('attendance') }}'">Attendance</a></li>
+                </ul>
+            </nav>
+        </header>
+        <section class="hero-section">
+            <p class="hero-section_heading">Smart Attendance, Simplified</p>
+            <p class="hero-section_content">
+                This cutting-edge automated attendance system seamlessly integrates face recognition technology to streamline attendance management. Built with an intuitive <i class="fa-brands fa-python"></i> Flask web framework and powered by advanced image processing, it ensures accurate* and efficient tracking. Effortlessly manage student records, sessions, and attendance data in real-time, all while maintaining a sleek and user-friendly experience.
+            </p>
+            <button class="continue-application" onclick="window.location.href='{{ url_for('attendance') }}'">
+                <div>
+                    <div class="pencil"></div>
+                    <div class="folder">
+                        <div class="top">
+                            <svg viewBox="0 0 24 27">
+                                <path d="M1,0 L23,0 C23.5522847,-1.01453063e-16 24,0.44771525 24,1 L24,8.17157288 C24,8.70200585 23.7892863,9.21071368 23.4142136,9.58578644 L20.5857864,12.4142136 C20.2107137,12.7892863 20,13.2979941 20,13.8284271 L20,26 C20,26.5522847 19.5522847,27 19,27 L1,27 C0.44771525,27 6.76353751e-17,26.5522847 0,26 L0,1 C-6.76353751e-17,0.44771525 0.44771525,1.01453063e-16 1,0 Z"></path>
+                            </svg>
+                        </div>
+                        <div class="paper"></div>
+                    </div>
+                </div>
+                Mark Attendance
+            </button>
+        </section>
+    </div>
+</body>
+</html>

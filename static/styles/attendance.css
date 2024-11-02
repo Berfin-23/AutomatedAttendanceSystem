@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Quicksand:wght@300..700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    color: #ffffff;
+    font-family: 'Quicksand', sans-serif;
+}
+
+header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: none;
+    padding: 10px;
+    cursor: default; 
+    background-color: #1a1a1a;
+}
+
+
+.logo_and_name {
+    max-height: 100px;
+    display: flex;
+    align-items: center;
+    padding: none;
+    margin: none;
+}
+
+.logo_and_name img {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+    filter: invert(1);
+}
+
+.logo_and_name p {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #ffffff;
+    padding: 0px;
+    margin: 0px;
+}
+
+nav {
+    padding-right: 20px;
+}
+
+.header_nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+    align-items: center;
+    width: 30%;
+    list-style: none;
+    font-size: 22px;
+}
+
+.header_nav .current-page{
+  font-size: 28px;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: default;
+}
+
+.header_nav li a{
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.header_nav li{
+    color: #ffffff;
+    font-weight: 500;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.header_nav li:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.header_nav li:nth-child(4):hover {
+    transform: scale(1);
+}
+
+.header_nav li a:hover {
+    color: #c3fffd;
+}
+
+h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 20px;
+}
+
+video {
+    width: 70%;
+    height: auto;
+    border: 1px solid rgb(255, 255, 255);
+    display: block;
+    margin: 0 auto;
+}
+
+#complete-session {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1em;
+    font-weight: 700;
+    margin-top: 20px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    border: none;
+    cursor: pointer;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#detected-names {
+    margin-top: 20px;
+    font-size: 1.5em;
+}
+#status-message {
+    margin-top: 20px;
+    color: red; /* Make the message red for visibility */
+}
+table {
+    border-collapse: collapse;
+    width: 70%;
+    margin: 30px auto;
+    color: white;
+}
+th, td {
+    border: 1px solid rgb(199, 199, 199);
+    padding: 8px;
+    text-align: left;
+}
+th {
+    background-color: #000000;
+}
+
+#session-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(41, 41, 41);
+    color: white;
+    width: 500px;
+    height: 400px;
+    padding: 20px;
+    border: 2px solid black;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+    z-index: 1000;
+    border-radius: 10px;
+}
+
+.session-list-div {
+    overflow-y: auto;
+    margin-top: 10px;
+    height: 300px;
+}
+
+#session-modal ul {
+    list-style-type: none;
+    padding: 0;
+}
+#session-modal li {
+    border: 1px solid white;
+    padding: 8px;
+    margin: 5px 0;
+    cursor: pointer;
+    color: rgb(252, 252, 252);
+}
+
+.session-modal-button {
+    border: none;
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/admin.css') }}">
+</head>
+<body>
+    <header>
+        <section class="logo_and_name">
+            <p>Attendance System</p>
+        </section>
+        <nav>
+            <ul class="header_nav">
+                <li><a onclick="window.location.href='{{ url_for('home') }}'">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li class="current-page">Admin</li>
+                <li><a onclick="window.location.href='{{ url_for('attendance') }}'">Attendance</a></li>
+            </ul>
+        </nav>
+    </header>
+    <h1>Welcome Back !!</h1>
+    <section class="add-details">
+        <div class="add-students">
+            <h2>Add Students</h2>
+            <form id="student-form" action="{{ url_for('admin') }}" method="POST" enctype="multipart/form-data">
+                <div class="detail">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="detail">
+                    <label for="register_number">Register Number:</label>
+                    <input type="text" id="register_number" name="register_number" required>
+                </div>
+
+                <div class="detail">
+                    <label for="image">Upload Image:</label>
+                    <input type="file" id="image" name="image" accept="image/*" required>
+                    <button type="button" class="custom-upload-button" onclick="document.getElementById('image').click()">Choose File</button>
+                    <span id="file-name" style="margin-left: 10px;"></span>
+                    <script>
+                        document.getElementById('image').addEventListener('change', function() {
+                            const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
+                            document.getElementById('file-name').textContent = fileName;
+                        });
+                    </script>
+                </div>
+
+                <div class="add-button-group">
+                    <button type="button" id="capture-button">Capture Image</button>
+                    <button type="submit" class="submit-button">Upload</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="add-sessions">
+            <h2>Add Session</h2>
+            <form id="session-form" action="{{ url_for('add_session') }}" method="POST">
+                <div class="detail">
+                    <label for="session_name">Session Name:</label>
+                    <input type="text" id="session_name" name="session_name" required>
+                </div>
+
+                <div class="detail">
+                    <label for="session_date">Date:</label>
+                    <input type="date" id="session_date" name="session_date" required>
+                </div>
+
+                <div class="detail">
+                    <label for="start_time">Start Time:</label>
+                    <input type="time" id="start_time" name="start_time" required>
+                </div>
+
+                <div class="detail">
+                    <label for="end_time">End Time:</label>
+                    <input type="time" id="end_time" name="end_time" required>
+                </div>
+
+                <div class="detail">
+                    <label for="grace_time">Grace Time:</label>
+                    <input type="number" id="grace_time" name="grace_time" required>
+                </div>
+
+                <button type="submit" class="submit-button">Add Session</button>
+            </form>
+        </div>
+    </section>
+
+    <br>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+    
+    <section class="view-details">
+        <div class="view-students">
+            <h2>Registered Students</h2>
+            <div class="search-container">
+                <input type="text" id="student-search" placeholder="Search for students...">
+            </div>
+            <table id="students-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Register Number</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.register_number.upper() }}</td>
+                            <td>
+                                <form action="{{ url_for('delete_student', register_number=student.register_number) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="table-button">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="view-sessions">
+            <h2>Sessions</h2>
+            <div class="search-container">
+                <input type="text" id="session-search" placeholder="Search for sessions...">
+            </div>
+                <table id="sessions-table">
+                    <thead>
+                        <tr>
+                            <th>Session Name</th>
+                            <th>Date</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Grace Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                            <tr>
+                                <td>{{ session.session_name }}</td>
+                                <td>{{ session.date }}</td>
+                                <td>{{ session.start_time }}</td>
+                                <td>{{ session.end_time }}</td>
+                                <td>{{ session.grace_time }}</td>
+                                <td>
+                                    <form action="{{ url_for('delete_session', session_name=session.session_name) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="table-button">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        </div>
+    </section>  
+
+    <div class="completed-sessions">
+        <h2>Completed Sessions</h2>
+        <div class="search-container">
+            <input type="text" id="completed-session-search" placeholder="Search for completed sessions...">
+            </div>
+            <table id="completed-sessions-table">
+                <thead>
+                    <tr>
+                        <th>Session Name</th>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Grace Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in completed_sessions %}
+                        <tr onclick="showAttendanceDetails('{{ session.session_name }}')">
+                            <td>{{ session.session_name }}</td>
+                            <td>{{ session.date }}</td>
+                            <td>{{ session.start_time }}</td>
+                            <td>{{ session.end_time }}</td>
+                            <td>{{ session.grace_time }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="attendanceModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Attendance Details</h2>
+                <div id="session-details">
+                    <!-- Session details will be dynamically inserted here -->
+                </div>
+                <div class="modal-table">
+                    <table id="attendance-details-table">
+                        <thead>
+                            <tr>
+                                <th>Register Number</th>
+                                <th>Status</th>
+                                <th>Attendance Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                    <button id="download-excel-button" onclick="downloadExcel()">Export as xlsx</button>
+                    <button id="delete-session-button" onclick="deleteSession()">Delete Session</button>
+            </div>
+            </div>
+        </div>
+
+    <script>
+        // Search functionality for registered students
+        document.getElementById('student-search').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#students-table tbody tr');
+            rows.forEach(row => {
+                const name = row.cells[0].textContent.toLowerCase();
+                const registerNumber = row.cells[1].textContent.toLowerCase();
+                if (name.includes(filter) || registerNumber.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Search functionality for sessions
+        document.getElementById('session-search').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#sessions-table tbody tr');
+            rows.forEach(row => {
+                const sessionName = row.cells[0].textContent.toLowerCase();
+                if (sessionName.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('capture-button').onclick = function() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    const video = document.createElement('video');
+                    video.srcObject = stream;
+                    video.play();
+
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+
+                    // Add the video element to the body
+                    const videoContainer = document.createElement('div');
+                    videoContainer.id = 'video-container';
+                    videoContainer.style.position = 'fixed';
+                    videoContainer.style.top = '50%';
+                    videoContainer.style.left = '50%';
+                    videoContainer.style.transform = 'translate(-50%, -50%)';
+                    videoContainer.style.zIndex = '1000';
+                    videoContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                    videoContainer.style.padding = '10px';
+                    videoContainer.style.borderRadius = '10px';
+                    videoContainer.style.width = '50%';
+                    videoContainer.appendChild(video);
+                    document.body.appendChild(videoContainer);
+
+                    setTimeout(function() {
+                        // Set the canvas size to the video size
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+
+                        // Capture the mirrored image
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        const dataUrl = canvas.toDataURL('image/png');
+
+                        fetch(dataUrl)
+                            .then(res => res.blob())
+                            .then(blob => {
+                                const file = new File([blob], document.getElementById('register_number').value + '.png', { type: 'image/png' });
+                                const dataTransfer = new DataTransfer();
+                                dataTransfer.items.add(file);
+                                document.getElementById('image').files = dataTransfer.files;
+
+                                stream.getTracks().forEach(track => track.stop());
+                                videoContainer.remove(); // Remove video container from DOM
+                                video.remove(); // Remove video from DOM
+                            });
+                    }, 3000); // Capture after 3 seconds
+                })
+                .catch(function(error) {
+                    console.error('Error accessing camera: ', error);
+                });
+        };
+
+        document.getElementById('completed-session-search').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#completed-sessions-table tbody tr');
+            rows.forEach(row => {
+                const sessionName = row.cells[0].textContent.toLowerCase();
+                if (sessionName.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        let currentSessionName = ""; // To track the currently viewed session
+
+        function showAttendanceDetails(sessionName) {
+            currentSessionName = sessionName; // Set the current session name
+            fetch(`/get_attendance_details/${sessionName}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Log the data to inspect its structure
+
+                    const sessionDetailsDiv = document.getElementById('session-details');
+                    if (data.length > 0) {
+                        sessionDetailsDiv.innerHTML = `
+                            <p>Session Name: ${sessionName}</p>
+                        `;
+                    } else {
+                        sessionDetailsDiv.innerHTML = `
+                            <p>No details available for this session.</p>
+                        `;
+                    }
+
+                    const tbody = document.querySelector('#attendance-details-table tbody');
+                    tbody.innerHTML = '';
+                    data.forEach(record => {
+                        const attendanceTime = new Date(record.attendance_time);
+                        attendanceTime.setHours(attendanceTime.getHours() + 5);
+                        attendanceTime.setMinutes(attendanceTime.getMinutes() + 30);
+
+                        const formattedTime = new Date(attendanceTime.getTime() + 13 * 60 * 60 * 1000).toLocaleString("en-IN", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                        });
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${record.register_number.toUpperCase()}</td>
+                            <td>${record.status}</td>
+                            <td>${formattedTime}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    document.getElementById('attendanceModal').style.display = 'block';
+                })
+                .catch(error => console.error('Error fetching attendance details:', error));
+        }
+
+        function downloadExcel() {
+            fetch(`/get_attendance_details/${currentSessionName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const worksheet = XLSX.utils.json_to_sheet(data);
+                    const workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance Details");
+                    XLSX.writeFile(workbook, `${currentSessionName}_attendance.xlsx`);
+                })
+                .catch(error => console.error('Error downloading Excel sheet:', error));
+        }
+
+        function deleteSession() {
+            if (!currentSessionName) return; // No session to delete
+
+            fetch(`/delete_completed_session/${currentSessionName}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                closeModal();
+                location.reload(); // Reload the page to refresh the list of sessions
+            })
+            .catch(error => console.error('Error deleting session:', error));
+        }
+
+        function closeModal() {
+            document.getElementById('attendanceModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('attendanceModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+    };
+    </script>
+</body>
+</html>

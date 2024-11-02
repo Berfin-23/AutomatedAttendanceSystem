@@ -1,0 +1,343 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Quicksand:wght@300..700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    color: #ffffff;
+    font-family: 'Quicksand', sans-serif;
+}
+
+header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: none;
+    padding: 10px;
+    cursor: default; 
+    background-color: #1a1a1a;
+}
+
+
+.logo_and_name {
+    max-height: 100px;
+    display: flex;
+    align-items: center;
+    padding: none;
+    margin: none;
+}
+
+.logo_and_name img {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+    filter: invert(1);
+}
+
+.logo_and_name p {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #ffffff;
+    padding: 0px;
+    margin: 0px;
+}
+
+nav {
+    padding-right: 20px;
+}
+
+.header_nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+    align-items: center;
+    width: 30%;
+    list-style: none;
+    font-size: 22px;
+}
+
+.header_nav .current-page{
+  font-size: 28px;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: default;
+}
+
+.header_nav li a{
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.header_nav li{
+    color: #ffffff;
+    font-weight: 500;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.header_nav li:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.header_nav li:nth-child(3):hover {
+    transform: scale(1);
+}
+
+.header_nav li a:hover {
+    color: #c3fffd;
+}
+
+h1 {
+    margin-left: 20px;
+}
+
+.add-details {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px;
+    gap: 40px;
+}
+
+.add-students, .add-sessions {
+    background-color: #1d1d1d;
+    padding: 0px 20px 10px 20px;
+    width: 50%;
+    border-radius: 10px;
+}
+
+.add-students form button, .add-sessions form button {
+    padding: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: #000000;
+    cursor: pointer;
+    width: 140px;
+    font-family: 'Quicksand', sans-serif;
+}
+
+.add-students form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 auto;
+    position: relative; 
+    padding-bottom: 170px;
+}
+
+.detail {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail label {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.detail input {
+    font-family: 'Quicksand', sans-serif;
+    padding: 6px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: white;
+    background-color: rgb(46, 46, 46);
+    color: #ffffff;
+}
+
+.detail input:focus {
+    outline: none;
+}
+
+.add-sessions form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 auto;
+    position: relative; /* Make the form a positioned ancestor */
+    padding-bottom: 60px; /* Give some space at the bottom for the button */
+}
+
+#image {
+    display: none;
+}
+
+.custom-upload-button {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    display: inline-block;
+    cursor: pointer;
+}
+
+#file-name {
+    margin-left: 200px;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.add-button-group {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+}
+
+.submit-button {
+    font-family: 'Quicksand', sans-serif;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.search-container {
+    margin: 20px 0;
+}
+.search-container input {
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Quicksand', sans-serif;
+    box-sizing: border-box;
+    padding: 6px;
+    font-size: 16px;
+    border-radius: 5px;
+    background-color: #1d1d1d;
+    border: none;
+}
+
+.view-details {
+    margin: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.view-students {
+    width: 40%;
+    min-height: 300px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.view-sessions {
+    width: 60%;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+
+.table-button {
+    padding: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: #000000;
+    cursor: pointer;
+    width: 70px;
+    font-family: 'Quicksand', sans-serif;
+}
+
+.completed-sessions {
+    padding: 0px 20px 10px 20px;
+    width: 90%;
+    border-radius: 10px;
+    margin: 20px auto; /* Center the element horizontally */
+}
+
+.completed-sessions h2{
+    text-align: center;
+}
+
+.completed-sessions table{
+    overflow-y: auto;
+    max-height: 500px;
+}
+
+
+video {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: auto;
+    transform: translate(-50%, -50%) scaleX(-1);
+    border: 1px solid black;
+    z-index: 10;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid rgb(255, 255, 255);
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.517);
+    padding-top: 60px;
+}
+
+.modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 70%;
+    width: 80%;
+    color: #ffffff;
+    background-color: #1d1d1d;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.close {
+    color: #fff;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover, .close:focus {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-table {
+    min-height: 78%;
+    overflow-y: auto;
+}
+
+
+.modal-content button {
+    padding: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: #000000;
+    cursor: pointer;
+    width: 140px;
+    font-family: 'Quicksand', sans-serif;
+}

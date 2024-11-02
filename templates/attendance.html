@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Page</title>
+    <link rel="stylesheet" href="../static/styles/attendance.css">
+</head>
+<body>
+    <header>
+        <section class="logo_and_name">
+            <p>Attendance System</p>
+        </section>
+        <nav>
+            <ul class="header_nav">
+                <li><a onclick="window.location.href='{{ url_for('home') }}'">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a onclick="window.location.href='{{ url_for('admin') }}'">Admin</a></li>
+                <li class="current-page">Attendance</li>
+            </ul>
+        </nav>
+    </header>
+    <h1>Check in! Don't forget to Smile</h1>
+    <video id="video" autoplay></video>
+    <div id="detected-names"></div>
+    <div id="status-message"></div>
+
+    <button id="complete-session" onclick="completeSession()">Complete Session</button>
+
+    <table id="recognized-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Register Number</th>
+                <th>Status</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Recognized students will be added here dynamically -->
+        </tbody>
+    </table>
+
+    <!-- Modal for choosing a session -->
+    <div id="modal-overlay"></div>
+    <div id="session-modal">
+        <h2>Select a Session for Attendance</h2>
+        <div class="session-list-div">
+            <ul id="session-list"></ul>
+        </div>
+        <button class="session-modal-button" onclick="closeSessionModal()">Cancel</button>
+    </div>
+
+
+    <script>
+        const video = document.getElementById('video');
+        const displayedRegisterNumbers = new Set();
+        let selectedSession = null;
+        let sessionStartTime = null;
+        let gracePeriod = null;
+
+        window.onload = () => {
+            fetchAvailableSessions();
+        };
+
+        function fetchAvailableSessions() {
+            fetch('/get_available_sessions')
+                .then(response => response.json())
+                .then(sessions => {
+                    if (sessions.length > 0) {
+                        displaySessionModal(sessions);
+                    } else {
+                        alert('No sessions available.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching sessions:', error);
+                });
+        }
+
+        function displaySessionModal(sessions) {
+            const modal = document.getElementById('session-modal');
+            const overlay = document.getElementById('modal-overlay');
+            const sessionList = document.getElementById('session-list');
+            sessionList.innerHTML = '';
+
+            sessions.forEach(session => {
+                const listItem = document.createElement('li');
+                listItem.innerText = `${session.session_name} - ${session.date} - ${session.start_time} to ${session.end_time} (Grace: ${session.grace_time} min)`;
+                listItem.onclick = () => selectSession(session);
+
+                sessionList.appendChild(listItem);
+            });
+
+            modal.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        function selectSession(session) {
+            fetch('/set_current_session', {
+                method: 'POST',
+                body: JSON.stringify(session),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(() => {
+                selectedSession = session;
+                sessionStartTime = new Date(`${session.date}T${session.start_time}`);
+                gracePeriod = session.grace_time;
+                closeSessionModal();
+                startVideoStream();
+            })
+            .catch(error => {
+                console.error('Error setting session:', error);
+            });
+        }
+
+        function closeSessionModal() {
+            document.getElementById('session-modal').style.display = 'none';
+            document.getElementById('modal-overlay').style.display = 'none';
+        }
+
+        function startVideoStream() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.addEventListener('playing', startFaceRecognition);
+                })
+                .catch(err => {
+                    console.error("Error accessing the camera: ", err);
+                });
+        }
+
+        function startFaceRecognition() {
+            setInterval(async () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const base64Image = canvas.toDataURL('image/png');
+
+                const response = await fetch('/recognize_faces', {
+                    method: 'POST',
+                    body: JSON.stringify({ image: base64Image }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                displayDetectedNames(data);
+            }, 1000);
+        }
+
+function displayDetectedNames(data) {
+        const detectedNamesDiv = document.getElementById('detected-names');
+        const statusMessageDiv = document.getElementById('status-message');
+        const recognizedTableBody = document.getElementById('recognized-table').getElementsByTagName('tbody')[0];
+
+        detectedNamesDiv.innerHTML = '';
+        statusMessageDiv.innerHTML = '';
+
+        const currentTime = new Date();
+
+        data.current_recognized_students.forEach(person => {
+            const arrivalStatus = getArrivalStatus(currentTime);
+            const nameElement = document.createElement('div');
+            nameElement.innerText = `Name: ${person.name}, Register Number: ${person.register_number}, Status: ${arrivalStatus}`;
+            detectedNamesDiv.appendChild(nameElement);
+
+            // Only add if the register number is not already displayed
+            if (!displayedRegisterNumbers.has(person.register_number)) {
+                const row = recognizedTableBody.insertRow();
+                const nameCell = row.insertCell(0);
+                const regNoCell = row.insertCell(1);
+                const statusCell = row.insertCell(2);
+                const timeCell = row.insertCell(3);
+
+                if (person.name.toLowerCase() !== 'unknown') {
+                    nameCell.innerText = person.name;
+                    regNoCell.innerText = person.register_number.toUpperCase();
+                    statusCell.innerText = arrivalStatus;
+                    timeCell.innerText = currentTime.toLocaleTimeString();
+                }
+
+                displayedRegisterNumbers.add(person.register_number);
+            }
+        });
+
+        if (data.current_recognized_students.length === 0) {
+            statusMessageDiv.innerText = "No faces found.";
+        }
+    }
+
+        function getArrivalStatus(currentTime) {
+        const earlyAttendanceTime = new Date(sessionStartTime);
+        earlyAttendanceTime.setMinutes(sessionStartTime.getMinutes() - 15);
+
+        const graceEndTime = new Date(sessionStartTime);
+        graceEndTime.setMinutes(sessionStartTime.getMinutes() + gracePeriod);
+
+        if (currentTime >= earlyAttendanceTime && currentTime <= sessionStartTime) {
+            return "Present";
+        } else if (currentTime > sessionStartTime && currentTime <= graceEndTime) {
+            return "Present";
+        } else if (currentTime > graceEndTime) {
+            return "Late";
+        }
+        return "Absent";
+    }
+
+        function completeSession() {
+            fetch('/complete_session', {
+                method: 'POST',
+                body: JSON.stringify({
+                    session: selectedSession,
+                    recognized_students: Array.from(displayedRegisterNumbers)
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(() => {
+                window.location.href = '/';
+            })
+            .catch(error => {
+                console.error('Error completing session:', error);
+            });
+        }
+    </script>
+</body>
+</html>
